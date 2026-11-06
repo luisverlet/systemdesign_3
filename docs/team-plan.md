@@ -7,8 +7,8 @@
 |---|----------|----------|--------|
 | D1 | Patrón del evaluador de políticas | **Rule Map** | ✅ |
 | D2 | Arquitectura backend | **Capas** (api → services → integrations/models) | ✅ |
-| D3 | Frontend | **TypeScript** · Tailwind ⏳ | ✅ |
-| D4 | Tiempo mínimo de conexión (MCT) | 60 min (provisional) | ⏳ |
+| D3 | Frontend | **TypeScript** · sin Tailwind (CSS propio) | ✅ |
+| D4 | Tiempo mínimo de conexión (MCT) | **15 min** | ✅ |
 | D5 | Modificación relevante | Ver `project.md` → Decisiones | ✅ |
 | D6 | Datos visibles al pasajero | Ver `project.md` → Decisiones | ✅ |
 | D7 | Uso de IA en runtime | **Ninguno** por ahora (plantillas); LLM más adelante para una utilidad puntual | ✅ |

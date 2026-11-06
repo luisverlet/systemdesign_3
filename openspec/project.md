@@ -34,7 +34,7 @@
 - **D1 Políticas:** Rule Map (diccionario `condición -> función pura`).
 - **D2 Backend:** arquitectura por capas `api -> services -> integrations / models`.
 - **D3 Frontend:** React + TypeScript.
-- **D4 MCT:** 60 min (provisional). `missed_connection = nueva_llegada + MCT > salida_siguiente`.
+- **D4 MCT:** 15 min. `missed_connection = nueva_llegada + MCT > salida_siguiente`.
 - **D5 Modificación relevante:**
   - `ACTIONABLE`: cancelación, conexión perdida o retraso >= 180 min -> evaluar políticas, ofrecer opciones o escalar.
   - `INFORMATIONAL`: retraso 30-179 min sin afectar conexión, o cambio de puerta -> solo notificar.
@@ -43,6 +43,7 @@
   - Etiqueta permanente del pasajero: nombre, documento (cédula) y nivel de fidelidad (`loyalty_tier`).
   - Email, teléfono, facturación y dirección: solo dentro de la cuenta del titular; nunca en notificaciones ni en la respuesta de disrupción.
   - Notificación de un vuelo: todos los datos del vuelo (número, origen, destino, horas programada/nueva, puerta, embarque, retraso, estado).
+- **D6b Horarios derivados:** hora de embarque = salida - 20 min; hora en sala = embarque - 60 min (salida - 80 min). Se calculan sobre la salida vigente (con retraso si existe). Puerta sin dato -> `no disponible`.
 - **D7 IA en runtime:** ninguna; mensajes por plantillas deterministas. Se evaluará un LLM más adelante para una utilidad puntual.
 
 ## Restricciones> TODO
