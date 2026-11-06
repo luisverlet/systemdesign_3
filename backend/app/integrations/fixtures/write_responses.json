@@ -1,0 +1,14 @@
+{
+  "create_rebooking_request": {
+    "201": { "request_id": "RBK-80231", "status": "PENDING_CONFIRMATION", "expires_at": "2026-09-15T11:12:00Z" },
+    "409": { "error": "DUPLICATE_REQUEST", "request_id": "RBK-80231" },
+    "503": { "error": "UPSTREAM_TIMEOUT" }
+  },
+  "create_human_case": {
+    "201": { "case_id": "HC-4471", "queue": "DISRUPTION_L2", "sla_minutes": 45 }
+  },
+  "notify_passenger": {
+    "202": { "notification_id": "NT-9912", "channel": "PUSH", "status": "QUEUED" },
+    "422": { "error": "UNVALIDATED_CONTENT", "detail": "missing policy_ref" }
+  }
+}

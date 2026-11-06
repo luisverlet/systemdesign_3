@@ -1,0 +1,55 @@
+{
+  "booking_id": "ABC123",
+  "passengers": [
+    { "passenger_id": "P1", "name": "Maria Silva", "type": "ADULT", "document_id": "12.345.678-9", "loyalty_tier": "GOLD" },
+    { "passenger_id": "P2", "name": "Tomás Silva", "type": "CHILD", "document_id": null, "loyalty_tier": null }
+  ],
+  "flights": [
+    {
+      "segment_id": "S1", "flight_number": "NB500", "origin": "SCL", "destination": "LIM", "date": "2026-09-15",
+      "scheduled_departure": "14:30", "scheduled_arrival": "17:55",
+      "estimated_departure": "17:10", "estimated_arrival": "20:35",
+      "gate": "24", "delay_minutes": 160, "status": "DELAYED",
+      "boarding_time": "16:50", "lounge_time": "15:50", "times_estimated": true
+    },
+    {
+      "segment_id": "S2", "flight_number": "NB2410", "origin": "LIM", "destination": "MEX", "date": "2026-09-15",
+      "scheduled_departure": "19:05", "scheduled_arrival": "23:40",
+      "estimated_departure": "19:05", "estimated_arrival": "23:40",
+      "gate": null, "delay_minutes": 0, "status": "SCHEDULED",
+      "boarding_time": "18:45", "lounge_time": "17:45", "times_estimated": true
+    }
+  ],
+  "events": [
+    { "event_id": "E-1001", "segment_id": "S1", "type": "DELAY", "source": "OPS_CORE", "recorded_at": "2026-09-15T10:48:00Z", "accepted": true, "discard_reason": null },
+    { "event_id": "E-1007", "segment_id": "S1", "type": "GATE_CHANGE", "source": "AIRPORT_FEED", "recorded_at": "2026-09-15T10:55:30Z", "accepted": true, "discard_reason": null },
+    { "event_id": "E-1012", "segment_id": "S1", "type": "STATUS", "source": "LEGACY_MIRROR", "recorded_at": "2026-09-15T09:30:00Z", "accepted": false, "discard_reason": "SOURCE_DEGRADED" },
+    { "event_id": "E-2003", "segment_id": "S2", "type": "STATUS", "source": "OPS_CORE", "recorded_at": "2026-09-15T10:48:00Z", "accepted": true, "discard_reason": null }
+  ],
+  "impact": {
+    "relevance": "ACTIONABLE",
+    "missed_connection": true,
+    "reasons": [
+      "S1 retrasado 160 min: llegada estimada 20:35",
+      "Conexión S2 sale 19:05 (< 20:35 + 15 min MCT)"
+    ]
+  },
+  "applied_rules": [
+    { "rule_id": "R3", "condition": "missed_connection == true", "entitlement": "REBOOK_NO_FEE", "requires_human_approval": false },
+    { "rule_id": "R5", "condition": "group_includes_minor == true", "entitlement": "PRIORITY_HANDLING", "requires_human_approval": true }
+  ],
+  "options": [
+    { "option_id": "O1", "type": "REBOOK", "flight_number": "NB2412", "origin": "LIM", "destination": "MEX", "date": "2026-09-16", "departure": "08:15", "fare_difference": 0, "currency": null, "seats_available": 4, "policy_ref": "POL-DELAY-2026-03", "confidence": "HIGH" },
+    { "option_id": "O2", "type": "REBOOK", "flight_number": "NB2450", "origin": "LIM", "destination": "MEX", "date": "2026-09-15", "departure": "23:40", "fare_difference": 180000, "currency": "CLP", "seats_available": 1, "policy_ref": "POL-DELAY-2026-03", "confidence": "MEDIUM" }
+  ],
+  "decision": {
+    "type": "HUMAN_REVIEW",
+    "reason": "Conexión perdida con menor en el grupo (R5 requiere aprobación humana)",
+    "policy_version": "POL-DELAY-2026-03",
+    "human_case_id": "HC-4471"
+  },
+  "message": "Tu vuelo NB500 está retrasado 160 minutos y no alcanzarás tu conexión NB2410. Un agente revisará tu caso de forma prioritaria (caso HC-4471, respuesta en máx. 45 min).",
+  "data_completeness": "PARTIAL",
+  "missing_fields": ["fare_conditions.change_penalty_amount"],
+  "generated_at": "2026-09-15T11:02:40Z"
+}
