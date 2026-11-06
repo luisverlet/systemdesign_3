@@ -12,7 +12,7 @@
 | D5 | Modificación relevante | Ver `project.md` → Decisiones | ✅ |
 | D6 | Datos visibles al pasajero | Ver `project.md` → Decisiones | ✅ |
 | D7 | Uso de IA en runtime | **Ninguno** por ahora (plantillas); LLM más adelante para una utilidad puntual | ✅ |
-| D8 | Asignación Dev 1 / 2 / 3 | Cada integrante elige su rol | ⏳ |
+| D8 | Asignación Dev 1 / 2 / 3 | Roles genéricos Dev 1/2/3; cada integrante se identifica ante su agente | ✅ |
 
 ## Fase 0 – Contrato compartido (bloqueante, ~1 commit, Dev 2)
 Rama `feat/add-disruption-contract` → PR → merge a `main` **antes** que todo lo demás.
@@ -83,3 +83,18 @@ flowchart LR
   D2b --> D3b[Dev3 conecta API real]
   D3b --> DOC[README + AI note]
 ```
+
+---
+
+## Cómo arrancar con tu agente
+Al abrir el chat con tu agente de IA, empieza con:
+
+> Soy **Dev N** según `docs/team-plan.md`. Lee `AGENTS.md`, `openspec/AGENTS.md` y `openspec/project.md`, y trabaja solo en mi rama y mis tareas.
+
+| Rol | Responsabilidad | Rama | Carpetas que toca |
+|-----|-----------------|------|-------------------|
+| **Dev 1** | Core backend y algoritmia (mocks, reconciliación, políticas, decisión) | `feat/add-disruption-engine` | `backend/app/integrations/`, `backend/app/services/`, `backend/tests/` |
+| **Dev 2** | Infra, API, persistencia y documentación (incluye Fase 0) | `feat/add-disruption-contract` -> `feat/add-disruption-api` | `backend/app/api/`, `schemas/`, `models/`, `db/`, `core/`, `docs/` |
+| **Dev 3** | Frontend y UX (React + TS, sin Tailwind) | `feat/add-disruption-ui` | `frontend/` |
+
+El agente NO debe modificar carpetas de otro rol; si lo necesita, lo indica para coordinarlo por PR.
