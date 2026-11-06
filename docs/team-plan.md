@@ -5,13 +5,14 @@
 ## Decisiones clave pendientes (el equipo decide)
 | # | Decisión | Opciones | Estado |
 |---|----------|----------|--------|
-| D1 | Patrón del evaluador de políticas | Strategy / Rule Map | ⏳ |
-| D2 | Arquitectura backend | Hexagonal / Capas | ⏳ |
-| D3 | Frontend | JS o TS · Tailwind sí/no | ⏳ |
-| D4 | Tiempo mínimo de conexión (MCT) | ej. 60 min | ⏳ |
-| D5 | Umbral de "modificación relevante" | ej. delay ≥ 30 min, gate change, conexión perdida | ⏳ |
-| D6 | Datos visibles al pasajero | ej. sin document_id/phone/email de otros | ⏳ |
-| D7 | Uso de IA en runtime | Ninguno (plantillas) / LLM solo redacción | ⏳ |
+| D1 | Patrón del evaluador de políticas | **Rule Map** | ✅ |
+| D2 | Arquitectura backend | **Capas** (api → services → integrations/models) | ✅ |
+| D3 | Frontend | **TypeScript** · Tailwind ⏳ | ✅ |
+| D4 | Tiempo mínimo de conexión (MCT) | 60 min (provisional) | ⏳ |
+| D5 | Modificación relevante | Ver `project.md` → Decisiones | ✅ |
+| D6 | Datos visibles al pasajero | Ver `project.md` → Decisiones | ✅ |
+| D7 | Uso de IA en runtime | **Ninguno** por ahora (plantillas); LLM más adelante para una utilidad puntual | ✅ |
+| D8 | Asignación Dev 1 / 2 / 3 | Cada integrante elige su rol | ⏳ |
 
 ## Fase 0 – Contrato compartido (bloqueante, ~1 commit, Dev 2)
 Rama `feat/add-disruption-contract` → PR → merge a `main` **antes** que todo lo demás.
