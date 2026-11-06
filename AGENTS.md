@@ -22,6 +22,8 @@ Este repositorio usa **OpenSpec** (desarrollo guiado por especificaciones). Todo
 | `backend/app/models/` | Modelos ORM (SQLAlchemy) | Backend |
 | `backend/app/schemas/` | Esquemas Pydantic (request/response) | Backend |
 | `backend/app/core/` | Config, seguridad, utilidades transversales | Backend |
+| `backend/app/integrations/` | Adaptadores/mocks de sistemas externos (+ `fixtures/`) | Backend (Dev 1) |
+| `docs/team-plan.md` | Reparto de tareas, ramas y orden de commits | Todos |
 | `backend/app/db/` | Sesión de DB y migraciones (Alembic) | Backend |
 | `backend/tests/` | Tests pytest | Backend |
 | `frontend/src/pages/` | Vistas / rutas | Frontend |
