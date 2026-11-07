@@ -10,8 +10,8 @@
 - [x] 3.2 Tests unitarios para el servicio API (manejo de éxito, errores 404/422/503 y fallback)
 
 ## 4. Página de Búsqueda de Reserva
-- [ ] 4.1 Componente `SearchPage` con validación de código PNR (6 caracteres alfanuméricos)
-- [ ] 4.2 Accesos directos a casos de prueba preconfigurados (ej. reserva `ABC123`)
+- [x] 4.1 Componente `SearchPage` con validación de código PNR (6 caracteres alfanuméricos)
+- [x] 4.2 Accesos directos a casos de prueba preconfigurados (ej. reserva `ABC123`)
 
 ## 5. Visualización del Estado e Impacto del Viaje
 - [ ] 5.1 Componentes de vuelos `FlightCard`, `TripTimeline` y etiquetas de estado `EventBadge`
