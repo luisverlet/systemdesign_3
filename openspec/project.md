@@ -324,6 +324,7 @@ Evaluando los JSON de los mocks de manera estructurada:
 
 # Plan de Acción y Distribución del Equipo (Fullstack Vertical Slice)
 
+
 Aunque las instrucciones originales del examen indican que no se requieren pantallas ni frontend ("No screens or frontend are required"[cite: 2]), construir una interfaz para visualizar el flujo completo es una excelente decisión para demostrar dominio técnico en un escenario real.
 
 A continuación, se detalla la nueva estructura del equipo y el roadmap ajustado para integrar el desarrollo frontend.
@@ -375,3 +376,5 @@ Una vez decididas las opciones de la sección anterior, utilizaremos esta secuen
 4.  **Paso 4: Orquestación y Controladores (Dev 2).** Construcción del endpoint principal (ej. `POST /api/disruptions/resolve`) que consume la lógica de Dev 1, registra la decisión en PostgreSQL y retorna la respuesta procesada.
 5.  **Paso 5: Implementación de la Interfaz (Dev 3).** Creación de los componentes de UI para buscar la reserva, mostrar el estado (ej. "Vuelo Retrasado") y pintar los botones de acción ("Reagendar", "Pedir Reembolso") conectados al backend.
 6.  **Paso 6: Documentación Técnica (Dev 2).** Redacción final del *Engineering README* y la *AI Usage & Decision Note* documentando todas las decisiones tomadas durante los pasos 1 al 5.
+
+TODO EL CODIGO ESCRITO DEBE SEGUIR LAS BUENAS PRACTICAS DE PROGRAMACION Y ESTAR EN INGLES, INSTRUCCIONES PUEDEN ESTAR EN ESPANOL 
