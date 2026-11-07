@@ -1,4 +1,10 @@
-import { ResolveResponse } from '../types/disruption'
+import {
+  ResolveResponse,
+  RebookingRequest,
+  RebookingResponse,
+  EscalateRequest,
+  EscalateResponse,
+} from '../types/disruption'
 import mockABC123 from '../mocks/resolve-ABC123.json'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api/v1'
@@ -147,4 +153,68 @@ export async function fetchDisruption(
   }
 
   return data as ResolveResponse
+}
+
+/**
+ * Dispatches an automated rebooking request for an eligible alternative option.
+ */
+export async function requestRebooking(
+  payload: RebookingRequest,
+  mode: 'mock' | 'live' = 'mock'
+): Promise<RebookingResponse> {
+  if (mode === 'mock') {
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    return {
+      request_id: `REQ-${Date.now()}`,
+      status: 'CONFIRMED',
+      booking_id: payload.booking_id,
+      option_id: payload.option_id,
+      expires_at: new Date(Date.now() + 3600000).toISOString(),
+      message: `Rebooking successfully confirmed for option ${payload.option_id}.`,
+    }
+  }
+
+  const response = await fetch(`${API_BASE_URL}/disruptions/rebooking`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}))
+    throw new ApiError(err.detail || 'Failed to complete rebooking request', response.status)
+  }
+
+  return response.json()
+}
+
+/**
+ * Escalates a complex disruption case to human operations.
+ */
+export async function escalateCase(
+  payload: EscalateRequest,
+  mode: 'mock' | 'live' = 'mock'
+): Promise<EscalateResponse> {
+  if (mode === 'mock') {
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    return {
+      case_id: 'HC-4471',
+      queue: 'AIRPORT_SPECIAL_CARE',
+      sla_minutes: 45,
+      booking_id: payload.booking_id,
+    }
+  }
+
+  const response = await fetch(`${API_BASE_URL}/disruptions/escalate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}))
+    throw new ApiError(err.detail || 'Failed to escalate disruption case', response.status)
+  }
+
+  return response.json()
 }

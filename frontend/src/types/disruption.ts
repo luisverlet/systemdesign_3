@@ -1,4 +1,4 @@
-// Espejo de backend/app/schemas/disruption.py. Mantener sincronizado.
+// Mirror of backend/app/schemas/disruption.py. Keep synchronized.
 
 export interface PassengerLabel {
   passenger_id: string
@@ -94,4 +94,33 @@ export interface ResolveResponse {
   data_completeness: 'COMPLETE' | 'PARTIAL'
   missing_fields: string[]
   generated_at: string
+}
+
+export type RebookingStatus = 'PENDING_CONFIRMATION' | 'CONFIRMED' | 'INDETERMINATE' | 'REJECTED'
+
+export interface RebookingRequest {
+  booking_id: string
+  option_id: string
+}
+
+export interface RebookingResponse {
+  request_id: string
+  status: RebookingStatus
+  booking_id: string
+  option_id: string
+  expires_at: string | null
+  message: string
+}
+
+export interface EscalateRequest {
+  booking_id: string
+  reason: string
+  evidence?: Record<string, unknown>
+}
+
+export interface EscalateResponse {
+  case_id: string
+  queue: string
+  sla_minutes: number
+  booking_id: string
 }

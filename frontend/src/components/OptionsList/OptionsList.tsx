@@ -1,21 +1,55 @@
 import React, { useState } from 'react'
-import { Option, Decision } from '../../types/disruption'
+import { Option, Decision, RebookingResponse } from '../../types/disruption'
+import { useDataSource } from '../../context/DataSourceContext'
+import { requestRebooking } from '../../services/disruptionApi'
 import { OptionCard } from '../OptionCard/OptionCard'
 import styles from './OptionsList.module.css'
 
 interface OptionsListProps {
   options: Option[]
   decision: Decision
+  bookingId?: string
 }
 
-export const OptionsList: React.FC<OptionsListProps> = ({ options, decision }) => {
+export const OptionsList: React.FC<OptionsListProps> = ({
+  options,
+  decision,
+  bookingId = 'ABC123',
+}) => {
+  const { mode } = useDataSource()
   const [selectedOption, setSelectedOption] = useState<Option | null>(null)
-  const [confirmedOption, setConfirmedOption] = useState<Option | null>(null)
+  const [confirmedResult, setConfirmedResult] = useState<RebookingResponse | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [rebookingError, setRebookingError] = useState<string | null>(null)
 
   const isHumanReview = decision.type === 'HUMAN_REVIEW'
   const disabledReason = isHumanReview
     ? `Self-service rebooking is locked while Case ${decision.human_case_id || 'SUPPORT'} is being processed by a specialized agent.`
     : undefined
+
+  const handleConfirmRebooking = async () => {
+    if (!selectedOption) return
+
+    setIsSubmitting(true)
+    setRebookingError(null)
+
+    try {
+      const response = await requestRebooking(
+        {
+          booking_id: bookingId,
+          option_id: selectedOption.option_id,
+        },
+        mode
+      )
+      setConfirmedResult(response)
+      setSelectedOption(null)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to confirm rebooking'
+      setRebookingError(msg)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   if (!options || options.length === 0) {
     return (
@@ -44,7 +78,10 @@ export const OptionsList: React.FC<OptionsListProps> = ({ options, decision }) =
             option={option}
             disabled={isHumanReview}
             disabledReason={disabledReason}
-            onSelect={(opt) => setSelectedOption(opt)}
+            onSelect={(opt) => {
+              setRebookingError(null)
+              setSelectedOption(opt)
+            }}
           />
         ))}
       </div>
@@ -56,41 +93,47 @@ export const OptionsList: React.FC<OptionsListProps> = ({ options, decision }) =
             <p>
               Are you sure you want to select <strong>{selectedOption.flight_number || selectedOption.type}</strong> on {selectedOption.date} at {selectedOption.departure}?
             </p>
+            {rebookingError && (
+              <p style={{ color: 'var(--color-danger)', fontSize: '0.85rem' }}>{rebookingError}</p>
+            )}
             <div className={styles.modalButtons}>
               <button
                 type="button"
                 className={styles.cancelBtn}
-                onClick={() => setSelectedOption(null)}
+                disabled={isSubmitting}
+                onClick={() => {
+                  setSelectedOption(null)
+                  setRebookingError(null)
+                }}
               >
                 Cancel
               </button>
               <button
                 type="button"
                 className={styles.confirmBtn}
-                onClick={() => {
-                  setConfirmedOption(selectedOption)
-                  setSelectedOption(null)
-                }}
+                disabled={isSubmitting}
+                onClick={handleConfirmRebooking}
               >
-                Confirm Selection
+                {isSubmitting ? 'Confirming...' : 'Confirm Selection'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {confirmedOption && (
+      {confirmedResult && (
         <div className={styles.selectionModal} role="dialog" aria-modal="true">
           <div className={styles.modalContent}>
             <h4 className={styles.modalTitle}>Alternative Flight Reserved!</h4>
-            <p>
-              Your rebooking request for <strong>{confirmedOption.flight_number}</strong> has been registered. A revised itinerary has been dispatched to your flight record.
+            <p>{confirmedResult.message}</p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
+              Request ID: {confirmedResult.request_id} &bull; Status: {confirmedResult.status}
             </p>
             <div className={styles.modalButtons}>
               <button
                 type="button"
                 className={styles.confirmBtn}
-                onClick={() => setConfirmedOption(null)}
+                onClick={() => setConfirmedResult(null)}
               >
                 Close
               </button>

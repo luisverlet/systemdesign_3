@@ -127,6 +127,7 @@ export const BookingDetailsPage: React.FC = () => {
           <OptionsList
             options={data.options}
             decision={data.decision}
+            bookingId={data.booking_id}
           />
         </main>
       )}
