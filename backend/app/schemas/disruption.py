@@ -124,3 +124,38 @@ class ResolveResponse(BaseModel):
     data_completeness: str  # COMPLETE | PARTIAL
     missing_fields: list[str] = []
     generated_at: datetime
+
+
+class RebookingRequest(BaseModel):
+    booking_id: str = Field(pattern=r"^[A-Z0-9]{6}$", examples=["ABC123"])
+    option_id: str = Field(examples=["O1"])
+
+
+class RebookingStatus(str, Enum):
+    PENDING_CONFIRMATION = "PENDING_CONFIRMATION"
+    CONFIRMED = "CONFIRMED"
+    INDETERMINATE = "INDETERMINATE"
+    REJECTED = "REJECTED"
+
+
+class RebookingResponse(BaseModel):
+    request_id: str
+    status: RebookingStatus
+    booking_id: str
+    option_id: str
+    expires_at: datetime | None = None
+    message: str
+
+
+class EscalateRequest(BaseModel):
+    booking_id: str = Field(pattern=r"^[A-Z0-9]{6}$", examples=["ABC123"])
+    reason: str
+    evidence: dict = Field(default_factory=dict)
+
+
+class EscalateResponse(BaseModel):
+    case_id: str
+    queue: str
+    sla_minutes: int
+    booking_id: str
+    created_at: datetime
