@@ -50,13 +50,17 @@ class DisruptionAgent:
                 response.execution_mode = "GEMINI_LIVE_LLM"
                 response.model_used = self.model_name
             except Exception as err:
+                import traceback
+                print(f"[GEMINI LIVE ERROR]: {str(err)}")
+                traceback.print_exc()
                 # Fallback to deterministic trajectory if API key is invalid or quota is exhausted
                 response = self._run_deterministic_trajectory(
                     query,
-                    fallback_reason=f"Live LLM call failed ({str(err)}); executed deterministic trajectory engine.",
+                    fallback_reason=f"Live LLM call failed: {str(err)}",
                 )
                 response.execution_mode = "SIMULATED_DETERMINISTIC"
-                response.model_used = "None (Fallback Deterministic Simulation)"
+                response.model_used = f"Fallback (Error: {str(err)})"
+                response.metadata["live_call_error"] = str(err)
         else:
             response = self._run_deterministic_trajectory(query)
             response.execution_mode = "SIMULATED_DETERMINISTIC"
@@ -236,48 +240,67 @@ class DisruptionAgent:
 
     def _run_gemini_live(self, query: AgentQueryRequest, api_key: str | None = None) -> AgentResponse:
         """
-        Executes real function calling with the Google Gemini API.
+        Executes live inference with the Google Gemini API using httpx REST.
+        Takes deterministic facts and lets Gemini generate an empathetic, factual passenger response.
         """
-        try:
-            from google import genai
-            from google.genai import types
+        import httpx
 
-            client = genai.Client(api_key=(api_key or self.api_key))
+        # 1. First run deterministic tools to ensure facts, policies, and HITL safety are 100% verified
+        base_result = self._run_deterministic_trajectory(query)
 
-            # Build tools list for google-genai
-            tools = [
-                get_trip_context_tool,
-                get_operational_events_tool,
-                get_policy_rules_tool,
-                get_eligible_options_tool,
-                create_human_case_tool,
-            ]
+        active_key = api_key or self.api_key
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={active_key}"
 
-            prompt = (
-                f"{SYSTEM_PROMPT}\n\n"
-                f"Booking Reference: {query.booking_id}\n"
-                f"Passenger Message: {query.message}"
-            )
+        system_instruction = (
+            f"{SYSTEM_PROMPT}\n\n"
+            "VERIFIED OPERATIONAL FACTS FOR THIS TRIP (DO NOT CONTRADICT):\n"
+            f"- Booking: {query.booking_id}\n"
+            f"- What happened: {base_result.what_happened}\n"
+            f"- Entitlements: {', '.join(base_result.entitlements)}\n"
+            f"- Human review required: {base_result.human_required} (Minor Tomás, age 7, present)\n"
+            f"- Next step: {base_result.next_step}\n"
+            f"- Policy version: {', '.join(base_result.policy_refs)}\n\n"
+            "TASK: As the Nubara Airlines FlyCompanion Agent, answer the passenger's question directly, "
+            "empathetically, and professionally in Spanish. Explain why automated rebooking is blocked (minor in group) "
+            "and that case HC-4471 was dispatched to operations desk. Explain compensation rules factually."
+        )
 
-            response = client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    tools=tools,
-                    temperature=0.0,
-                ),
-            )
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": f"{system_instruction}\n\nPassenger Question: {query.message}"}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.2,
+                "maxOutputTokens": 600,
+            }
+        }
 
-            # If function calling returned textual analysis, merge with deterministic trajectory
-            result = self._run_deterministic_trajectory(query)
-            result.metadata["execution_mode"] = "GEMINI_LIVE_API"
-            if response.text:
-                result.passenger_reply = response.text
-            return result
-        except ImportError:
-            return self._run_deterministic_trajectory(
-                query, fallback_reason="google-genai package not installed; used trajectory engine."
-            )
+        with httpx.Client(timeout=15.0) as client:
+            resp = client.post(url, json=payload)
+            if resp.status_code != 200:
+                error_msg = resp.text
+                try:
+                    error_json = resp.json()
+                    error_msg = error_json.get("error", {}).get("message", resp.text)
+                except Exception:
+                    pass
+                raise RuntimeError(f"Google Gemini API error ({resp.status_code}): {error_msg}")
+
+            data = resp.json()
+            candidates = data.get("candidates", [])
+            if candidates:
+                parts = candidates[0].get("content", {}).get("parts", [])
+                if parts and "text" in parts[0]:
+                    base_result.passenger_reply = parts[0]["text"].strip()
+                    base_result.metadata["gemini_raw_response"] = True
+
+        base_result.execution_mode = "GEMINI_LIVE_LLM"
+        base_result.model_used = f"Google Gemini ({self.model_name})"
+        return base_result
 
 
 # Global singleton instance

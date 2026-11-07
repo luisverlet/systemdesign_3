@@ -201,7 +201,12 @@ export const AgentChatPage: React.FC = () => {
                 </span>
               ) : (
                 <span>
-                  <strong>Simulación Determinista Autónoma</strong> &bull; Ejecución local verificada (Sin costo ni consumo de cuota)
+                  <strong>Simulación Determinista Autónoma</strong> &bull; Ejecución local verificada
+                  {agentResponse.metadata?.live_call_error && (
+                    <div style={{ color: '#b91c1c', marginTop: '4px', fontSize: '0.82rem' }}>
+                      ⚠️ Aviso de Google API: {String(agentResponse.metadata.live_call_error)}
+                    </div>
+                  )}
                 </span>
               )}
             </div>
