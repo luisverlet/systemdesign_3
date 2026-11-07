@@ -15,7 +15,7 @@ export const FlightCard: React.FC<FlightCardProps> = ({
   const isDelayed = flight.delay_minutes > 0
 
   let badgeVariant: BadgeVariant = 'scheduled'
-  let badgeLabel = flight.status
+  let badgeLabel: string = flight.status
 
   if (isMissedConnection) {
     badgeVariant = 'missed'

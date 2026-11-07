@@ -1,0 +1,95 @@
+.banner {
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+}
+
+.humanReview {
+  background-color: #fff7ed;
+  border: 1px solid #fdba74;
+  color: #9a3412;
+}
+
+.autoOffer {
+  background-color: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  color: var(--color-success);
+}
+
+.infoOnly {
+  background-color: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
+  color: var(--color-info);
+}
+
+.noAction {
+  background-color: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.iconWrapper {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.description {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(0, 0, 0, 0.15);
+  font-size: 0.825rem;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.metaLabel {
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.metaValue {
+  font-weight: 700;
+}
+
+.casePill {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background-color: #ffedd5;
+  border: 1px solid #fed7aa;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  color: #c2410c;
+  letter-spacing: 0.05em;
+}
