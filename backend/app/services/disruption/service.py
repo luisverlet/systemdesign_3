@@ -8,16 +8,29 @@ from app.services.disruption import mocks
 from app.services.disruption.decision import decide
 
 
+def load(booking_id: str) -> tuple:
+    """(trip, events, options, policy). Raises mocks.BookingNotFound or mocks.UpstreamError."""
+    trip = mocks.get_trip_context(booking_id)
+    events = mocks.get_operational_events([s["segment_id"] for s in trip["segments"]])
+    return (
+        trip,
+        events,
+        mocks.get_eligible_options(trip),
+        mocks.get_policy_rules("DELAY"),
+    )
+
+
 def resolve(
     booking_id: str, now: datetime, compensation_requested: bool = False
 ) -> dict:
-    """Raises mocks.BookingNotFound or mocks.UpstreamError before any write happens."""
-    trip = mocks.get_trip_context(booking_id)
-    events = mocks.get_operational_events([s["segment_id"] for s in trip["segments"]])
-    options = mocks.get_eligible_options(trip)
-    policy = mocks.get_policy_rules("DELAY")
+    return resolve_loaded(load(booking_id), now, compensation_requested)
 
-    decision = decide(trip, events, options, policy, now, compensation_requested)
+
+def resolve_loaded(
+    inputs: tuple, now: datetime, compensation_requested: bool = False
+) -> dict:
+    """Decide on already-read inputs; creates the human case only when needed."""
+    decision = decide(*inputs, now, compensation_requested)
     decision["human_case"] = None
     if decision["action"] == "HUMAN":
         evidence = {

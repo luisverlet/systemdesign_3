@@ -10,4 +10,5 @@ COPY . .
 RUN dos2unix entrypoint.sh && chmod +x entrypoint.sh
 
 EXPOSE 8000
-CMD ["./entrypoint.sh"]
+# Run via sh: the compose bind mount replaces /app, dropping the image's chmod +x.
+CMD ["sh", "./entrypoint.sh"]

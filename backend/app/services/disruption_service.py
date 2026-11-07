@@ -1,5 +1,4 @@
 import hashlib
-import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -20,15 +19,11 @@ from app.schemas.disruption import (
     ResolveRequest,
     ResolveResponse,
 )
+from app.services.disruption import mocks
+from app.services.disruption import service as engine
+from app.services.disruption.contract import to_resolve_response
 
 FIXTURES_PATH = Path(__file__).resolve().parents[1] / "integrations" / "fixtures"
-FRONTEND_MOCK_PATH = (
-    Path(__file__).resolve().parents[3]
-    / "frontend"
-    / "src"
-    / "mocks"
-    / "resolve-ABC123.json"
-)
 
 
 class DisruptionService:
@@ -43,16 +38,24 @@ class DisruptionService:
         """Resolve trip disruption context, evaluate policy, and record decision audit."""
         booking_id = payload.booking_id.upper()
 
-        # Until Dev 1 merges the core engine, use baseline fixture for ABC123 or standard fallback
-        if FRONTEND_MOCK_PATH.exists() and booking_id == "ABC123":
-            raw_data = json.loads(FRONTEND_MOCK_PATH.read_text(encoding="utf-8"))
-            response = ResolveResponse.model_validate(raw_data)
-        else:
-            # Generic stub for any other booking ID
+        # Dev 1 core engine: reads -> reconcile events -> policy -> options -> decision.
+        try:
+            inputs = engine.load(booking_id)
+            now = mocks.now()
+            decision = engine.resolve_loaded(inputs, now)
+        except mocks.BookingNotFound:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Booking {booking_id} not found in operational feeds",
             )
+        except mocks.UpstreamError:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Upstream operational system unavailable",
+            )
+        response = ResolveResponse.model_validate(
+            to_resolve_response(inputs, decision, now)
+        )
 
         # Audit decision in PostgreSQL
         audit_entry = DecisionAudit(
@@ -90,7 +93,10 @@ class DisruptionService:
             .first()
         )
 
-        if last_decision and last_decision.decision_type == DecisionType.HUMAN_REVIEW.value:
+        if (
+            last_decision
+            and last_decision.decision_type == DecisionType.HUMAN_REVIEW.value
+        ):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Automated rebooking blocked: this case involves a minor and requires human agent approval.",
