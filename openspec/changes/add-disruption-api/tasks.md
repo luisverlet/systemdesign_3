@@ -8,9 +8,9 @@
 - [x] 2.3 Migración inicial 0001_initial_tables.py
 
 ## 3. Endpoints
-- [ ] 3.1 `POST /disruptions/resolve` (stub con mock) + auditoría
-- [ ] 3.2 `POST /disruptions/rebooking` con idempotencia (201/409/503)
-- [ ] 3.3 `POST /disruptions/escalate` + notify con `policy_ref`
+- [x] 3.1 `POST /disruptions/resolve` (stub con mock) + auditoría
+- [x] 3.2 `POST /disruptions/rebooking` con idempotencia (201/409/503)
+- [x] 3.3 `POST /disruptions/escalate` + notify con `policy_ref`
 
 ## 4. Transversal
 - [ ] 4.1 Manejadores de error uniformes
