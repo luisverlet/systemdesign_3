@@ -16,7 +16,8 @@ La lógica de decisión (Dev 1) debe exponerse como servicio invocable, con traz
 - Depende de: `add-disruption-contract` (Fase 0); se integra con `add-disruption-engine` (Dev 1) vía stub hasta su merge.
 - Responsable: Dev 2.
 
-## Decisiones pendientes del equipo
-- **A1** Creación del caso humano: automática al resolver (propuesto) o al confirmar el pasajero.
-- **A2** Llave de idempotencia: header `Idempotency-Key` enviado por el cliente (propuesto) o derivada `booking_id+option_id`.
-- **A3** Migraciones: Alembic (propuesto) o SQL en `db/init/`.
+## Decisiones tomadas por el equipo
+- **A1** Creación del caso humano: Automática al resolver cuando la regla lo requiera (`HUMAN_REVIEW`).
+- **A2** Llave de idempotencia: Derivada en backend a partir de `booking_id + option_id` (Opción B).
+- **A3** Migraciones: Alembic gestionando SQLAlchemy models (Opción A).
+- **Convención de código**: 100% en inglés (nombres, clases, funciones, schemas, comentarios internos).
