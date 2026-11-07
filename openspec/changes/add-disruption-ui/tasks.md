@@ -6,8 +6,8 @@
 - [x] 2.2 Crear sistema de diseño base en `src/styles/theme.css` y layout global (`AppLayout`, `Header` con selector de Mock/API)
 
 ## 3. Capa de Servicios y API Client
-- [ ] 3.1 Implementar `src/services/disruptionApi.ts` consumiendo `resolve-ABC123.json` en modo mock o FastAPI backend
-- [ ] 3.2 Tests unitarios para el servicio API (manejo de éxito, errores 404/422/503 y fallback)
+- [x] 3.1 Implementar `src/services/disruptionApi.ts` consumiendo `resolve-ABC123.json` en modo mock o FastAPI backend
+- [x] 3.2 Tests unitarios para el servicio API (manejo de éxito, errores 404/422/503 y fallback)
 
 ## 4. Página de Búsqueda de Reserva
 - [ ] 4.1 Componente `SearchPage` con validación de código PNR (6 caracteres alfanuméricos)
