@@ -2,8 +2,8 @@
 - [x] 1.1 Documentar proposal.md, design.md con wireframes y specs/disruption-ui/spec.md
 
 ## 2. Setup de Frontend y TypeScript (D3)
-- [ ] 2.1 Configurar TypeScript (`tsconfig.json`, `vite-env.d.ts`), scripts de build/test y paquetes necesarios
-- [ ] 2.2 Crear sistema de diseño base en `src/styles/variables.css` y layout global (`AppLayout`, `Header` con selector de Mock/API)
+- [x] 2.1 Configurar TypeScript (`tsconfig.json`, `vite-env.d.ts`), scripts de build/test y paquetes necesarios
+- [x] 2.2 Crear sistema de diseño base en `src/styles/theme.css` y layout global (`AppLayout`, `Header` con selector de Mock/API)
 
 ## 3. Capa de Servicios y API Client
 - [ ] 3.1 Implementar `src/services/disruptionApi.ts` consumiendo `resolve-ABC123.json` en modo mock o FastAPI backend
