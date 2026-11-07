@@ -13,8 +13,8 @@
 - [x] 3.3 `POST /disruptions/escalate` + notify con `policy_ref`
 
 ## 4. Transversal
-- [ ] 4.1 Manejadores de error uniformes
-- [ ] 4.2 Enmascarado de PII en logs/auditoría
+- [x] 4.1 Manejadores de error uniformes
+- [x] 4.2 Enmascarado de PII en logs/auditoría
 
 ## 5. Integración
 - [ ] 5.1 Reemplazar stub por motor de Dev 1

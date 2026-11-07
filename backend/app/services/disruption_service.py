@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.security import sanitize_payload
 from app.models.decision_audit import DecisionAudit
 from app.models.idempotency_record import IdempotencyRecord
 from app.schemas.disruption import (
@@ -35,11 +36,8 @@ class DisruptionService:
 
     @staticmethod
     def _sanitize_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
-        """Strip sensitive passenger PII (phone, email, document_id) before persistence."""
-        sanitized = dict(evidence)
-        for key in ["email", "phone", "document_id", "credit_card"]:
-            sanitized.pop(key, None)
-        return sanitized
+        """Strip or mask sensitive passenger PII before persistence."""
+        return sanitize_payload(evidence)
 
     def resolve(self, payload: ResolveRequest, db: Session) -> ResolveResponse:
         """Resolve trip disruption context, evaluate policy, and record decision audit."""
