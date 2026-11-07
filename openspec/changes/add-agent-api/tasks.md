@@ -13,7 +13,7 @@
 - [x] 3.4 Add unit/integration tests for `AgentChatPage` in `frontend/src/pages/AgentChat/AgentChatPage.test.tsx`
 
 ## 4. Engineering Architecture Report (Part 2)
-- [ ] 4.1 Update `docs/ENGINEERING_README.md` with:
+- [x] 4.1 Update `docs/ENGINEERING_README.md` with:
   - Autonomy Boundary table (what LLM decides vs what is strictly deterministic/forbidden)
   - Agent Pattern rationale (Function Calling loop, latency, cost analysis)
   - Context & PII boundaries (`get_trip_context` fields included vs stripped)
