@@ -5,10 +5,14 @@ Implements Function Calling, Tool Trajectory tracking, and prompt injection defe
 
 import os
 import json
+import time
+import uuid
 from typing import Any
 from app.schemas.agent import AgentQueryRequest, AgentResponse, AgentOption
 from app.services.agent.prompts import SYSTEM_PROMPT
 from app.services.agent.security import PromptInjectionDefense
+from app.services.agent.controls import action_guardrail, HITLBlockedActionException
+from app.core.telemetry import agent_telemetry
 from app.services.agent.tools import (
     AGENT_TOOL_MAPPING,
     get_trip_context_tool,
@@ -33,17 +37,49 @@ class DisruptionAgent:
         Executes the agentic workflow. If GEMINI_API_KEY is configured, connects
         to the live Google GenAI model. Otherwise, runs the deterministic trajectory
         engine to guarantee testability and zero-quota resilience.
+        Integrates Dev 2's AgentTelemetry for PII-safe tracing and latency tracking.
         """
+        start_time = time.time()
+        trace_id = str(uuid.uuid4())
+
         if self.api_key:
             try:
-                return self._run_gemini_live(query)
+                response = self._run_gemini_live(query)
             except Exception as err:
                 # Fallback to deterministic trajectory if API key is invalid or quota is exhausted
-                return self._run_deterministic_trajectory(
+                response = self._run_deterministic_trajectory(
                     query,
                     fallback_reason=f"Live LLM call failed ({str(err)}); executed deterministic trajectory engine.",
                 )
-        return self._run_deterministic_trajectory(query)
+        else:
+            response = self._run_deterministic_trajectory(query)
+
+        latency_ms = (time.time() - start_time) * 1000
+        response.metadata["trace_id"] = trace_id
+        response.metadata["latency_ms"] = round(latency_ms, 2)
+
+        # Audit execution trajectory with Dev 2 structured telemetry (PII-redacted)
+        try:
+            trajectory_steps = [
+                {"tool": tool_name, "step": idx + 1}
+                for idx, tool_name in enumerate(response.tools_invoked)
+            ]
+            agent_telemetry.record_trace(
+                trace_id=trace_id,
+                booking_id=query.booking_id,
+                trajectory=trajectory_steps,
+                latency_ms=latency_ms,
+                prompt_tokens=350,
+                completion_tokens=120,
+                metadata={
+                    "human_required": response.human_required,
+                    "entitlements": response.entitlements,
+                },
+            )
+        except Exception:
+            pass
+
+        return response
 
     def _run_deterministic_trajectory(
         self, query: AgentQueryRequest, fallback_reason: str | None = None
@@ -93,6 +129,20 @@ class DisruptionAgent:
         # R4 (compensation_requested) -> CASH_COMPENSATION (requires_human_approval: true, must not be granted blindly)
         entitlements = ["REBOOK_NO_FEE"]
         human_required = has_minor
+
+        # Evaluate Dev 2 ActionGuardrail for high-impact action safety (Rule R5)
+        applied_rules_payload = [
+            {"rule_id": "R3", "entitlement": "REBOOK_NO_FEE", "requires_human_approval": False}
+        ]
+        if has_minor:
+            applied_rules_payload.append(
+                {"rule_id": "R5", "entitlement": "PRIORITY_HANDLING", "requires_human_approval": True}
+            )
+
+        try:
+            action_guardrail.check_rebooking_allowed(trip_context, applied_rules_payload)
+        except HITLBlockedActionException:
+            human_required = True
 
         # 4. Retrieve Eligible Options
         tools_invoked.append("get_eligible_options")
