@@ -177,8 +177,15 @@ RAG no es descartado en la aviación comercial, sino delimitado a su dominio nat
 ## 5. Validación y Pruebas del Sistema
 
 El sistema cuenta con cobertura exhaustiva de pruebas automáticas en Backend y Frontend:
-1. **Pruebas de Seguridad contra Inyección:** `backend/tests/test_agent_security.py` valida la neutralización de ataques en `remarks`.
-2. **Pruebas del Motor Agéntico:** `backend/tests/test_agent_engine.py` valida la secuencia de herramientas, la aplicación de la regla R5 y la emisión de respuesta estructurada.
-3. **Pruebas de la API del Agente:** `backend/tests/test_agent_api.py` valida el endpoint `POST /api/v1/agent/chat`, la validación de esquemas (HTTP 422 ante PNRs inválidos) y la respuesta del caso María y Tomás.
-4. **Pruebas Deterministas de la Parte 1:** `backend/tests/test_disruption_*.py` certifican reconciliación de eventos, reglas de política y llaves de idempotencia.
-5. **Pruebas de Frontend (Vitest):** Tests unitarios e integración para la navegación, manejo de errores y la página interactiva del agente (`AgentChatPage.test.tsx`).
+1. **Pruebas de Seguridad contra Inyección (Dev 1):** `backend/tests/test_agent_security.py` valida la neutralización de ataques en `remarks`.
+2. **Pruebas del Motor Agéntico (Dev 1):** `backend/tests/test_agent_engine.py` valida la secuencia de herramientas, la aplicación de la regla R5 y la emisión de respuesta estructurada.
+3. **Suite de Evaluación de Trayectoria y Fidelidad (Dev 2 - `backend/tests/agent_evals/`):**
+   * `test_case1_target_conversation.py`: Valida el caso base de María y Tomás donde la regla R5 y la presencia del menor bloquean el rebooking automático mediante `ActionGuardrail` y derivan a `create_human_case`.
+   * `test_case2_contradictory_sources.py`: Valida la reconciliación descartando `LEGACY_MIRROR` y seleccionando `OPS_CORE` por timestamp más reciente.
+   * `test_case3_prompt_injection_remarks.py`: Valida que la inyección en `remarks` es tratada como dato inerte y no otorga compensación económica ni evade el guardrail.
+   * `test_case4_upstream_timeout_503.py`: Valida que los errores 503 upstream en rebooking quedan en estado `INDETERMINATE` sin reintentos ciegos destructivos.
+   * `test_faithfulness.py`: Valida que cada beneficio otorgado (`entitlements`) corresponda estrictamente a una versión de política activa (`POL-DELAY-2026-03`).
+   * `test_telemetry.py`: Valida el registro estructurado de auditoría en `logs/agent_trace.jsonl` enmascarando emails, teléfonos y documentos.
+4. **Pruebas de la API del Agente (Dev 3):** `backend/tests/test_agent_api.py` valida el endpoint `POST /api/v1/agent/chat`, la validación de esquemas (HTTP 422 ante PNRs inválidos) y la respuesta del caso María y Tomás.
+5. **Pruebas Deterministas de la Parte 1:** `backend/tests/test_disruption_*.py` certifican reconciliación de eventos, reglas de política y llaves de idempotencia.
+6. **Pruebas de Frontend (Vitest - Dev 3):** Tests unitarios e integración para la navegación, manejo de errores y la página interactiva del agente (`AgentChatPage.test.tsx`).

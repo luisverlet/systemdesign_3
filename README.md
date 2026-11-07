@@ -30,42 +30,62 @@ The **Disruption Companion** acts as a centralized orchestrator that:
 ```mermaid
 flowchart TD
     subgraph Client Layer
-        WebUI["Passenger Web Portal (React 18 + TS + CSS Modules)"]
-        Swagger["OpenAPI / Swagger Explorer (Port 8000)"]
+        WebUI["Passenger Portal & AI Agent Chat (React 18 + TS)"]
+        Swagger["OpenAPI / Swagger Explorer (:8000/docs)"]
     end
 
     subgraph API & Gateway Layer
         FastAPI["FastAPI Orchestrator (:8000/api/v1)"]
+        AgentRouter["Agent Router (/agent/chat)"]
         TraceMiddleware["X-Trace-Id & CORS Middleware"]
         SecurityFilter["PII Masking & Error Sanitizer"]
     end
 
-    subgraph Core Domain Services
-        Reconciler["Event Sanitizer (recorded_at & source check)"]
-        ImpactEngine["Trip Impact & MCT Analyzer (15m threshold)"]
-        PolicyEngine["Rule Map Engine (POL-DELAY-2026-03)"]
-        DecisionMaker["Decision Maker (AUTO / HUMAN / INFO)"]
+    subgraph Agentic Orchestration Layer
+        AgentEngine["DisruptionAgent Engine (Gemini / Offline Dual-Runner)"]
+        Guardrail["ActionGuardrail (Dev 2 HITL Safety)"]
+        Telemetry["AgentTelemetry (Dev 2 JSONL Logger with PII Redaction)"]
+        PromptShield["PromptInjectionDefense (XML Data Boundary)"]
+    end
+
+    subgraph Deterministic Domain Tools
+        T1["get_trip_context (Sanitized remarks)"]
+        T2["get_operational_events (Filtra LEGACY_MIRROR)"]
+        T3["get_policy_rules (Motor R1-R5)"]
+        T4["get_eligible_options (Vuelos alternativos)"]
+        T5["create_human_case (Caso HC-4471, SLA 45 min)"]
     end
 
     subgraph Data & Persistence Layer
         PostgreSQL[("PostgreSQL 16")]
-        AuditTable["decision_audits (Immutable history)"]
-        IdempotencyTable["idempotency_records (State locks)"]
+        AuditTable["decision_audits (Historial inmutable)"]
+        IdempotencyTable["idempotency_records (Bloqueo de estado)"]
+        TraceLogs["logs/agent_trace.jsonl (Trazas sanitizadas)"]
     end
 
     WebUI -->|HTTP / JSON| FastAPI
     Swagger -->|HTTP / JSON| FastAPI
     FastAPI --> TraceMiddleware
     TraceMiddleware --> SecurityFilter
-    SecurityFilter --> Reconciler
-    Reconciler --> ImpactEngine
-    ImpactEngine --> PolicyEngine
-    PolicyEngine --> DecisionMaker
-    DecisionMaker --> AuditTable
-    FastAPI --> IdempotencyTable
+    FastAPI --> AgentRouter
+    AgentRouter --> AgentEngine
+    AgentEngine --> PromptShield
+    AgentEngine --> Guardrail
+    AgentEngine --> Telemetry
+    Telemetry --> TraceLogs
+    AgentEngine --> T1 & T2 & T3 & T4 & T5
+    FastAPI --> AuditTable & IdempotencyTable
     AuditTable --> PostgreSQL
     IdempotencyTable --> PostgreSQL
 ```
+
+### 2.1. Team Engineering Breakdown (Part 2: Autonomous AI Agent)
+
+| Developer | Responsibilities & Delivered Components | Key Files |
+| :--- | :--- | :--- |
+| **Dev 1** | **Core Engine, Tool Bindings & Prompt Injection Defense**<br>&bull; Function Calling loop with dual-runner (Google Gemini Live API + offline trajectory engine).<br>&bull; Strict prompt injection defense isolating untrusted fixture fields (`remarks`) as inert XML data.<br>&bull; Domain tool bindings (`get_trip_context`, `get_operational_events`, `get_policy_rules`, `get_eligible_options`). | `backend/app/services/agent/engine.py`<br>`backend/app/services/agent/tools.py`<br>`backend/app/services/agent/security.py`<br>`backend/app/schemas/agent.py` |
+| **Dev 2** | **Safety Guardrails (HITL), Observability & Evaluation Suite**<br>&bull; `ActionGuardrail`: Blocks automated rebooking when travelling with minors (**Rule R5**) and forces human review.<br>&bull; Resilient 503 upstream timeout handler marking state as `INDETERMINATE`.<br>&bull; `AgentTelemetry`: Structured logger recording executions in `logs/agent_trace.jsonl` with strict PII masking.<br>&bull; 4 core trajectory evaluation tests + faithfulness check. | `backend/app/services/agent/controls.py`<br>`backend/app/core/telemetry.py`<br>`backend/tests/agent_evals/` |
+| **Dev 3** | **API Exposure, Interactive UI & Exam Architecture Documentation**<br>&bull; REST API endpoint `POST /api/v1/agent/chat` connecting `DisruptionAgent` to clients.<br>&bull; Interactive React/TS chat interface (`/agent`) with Maria Silva preset, trajectory inspector, and HITL alerts.<br>&bull; Deliverables answering Part A of the examination (`ENGINEERING_README.md`, `AI_USAGE_NOTE.md`).<br>&bull; OpenSpec canonical specifications and change archival. | `backend/app/api/agent.py`<br>`frontend/src/pages/AgentChat/`<br>`docs/ENGINEERING_README.md`<br>`docs/AI_USAGE_NOTE.md`<br>`README.md` |
 
 ---
 
@@ -316,15 +336,27 @@ curl -X POST http://localhost:8000/api/v1/agent/chat \
 ## 8. Running Automated Test Suites
 
 ### Backend Tests & Agent Evals (pytest)
-Runs contract validation, event reconciliation, policy rules R1–R5, agent engine, prompt injection security, and the agent API suite:
+Runs contract validation, event reconciliation, policy rules R1–R5, agent engine, prompt injection security, HITL guardrails, PII telemetry, and trajectory evals:
 ```bash
-# Inside Docker container
+# Inside Docker container - Run full backend suite
 docker compose exec backend pytest -v
 
-# Run agent and security evaluation tests specifically
-docker compose exec backend pytest backend/tests/test_agent_*.py -v
+# 1. Run Dev 2 Agent Trajectory & Faithfulness Evaluation Suite (4 core cases):
+docker compose exec backend pytest backend/tests/agent_evals/ -v
+# - test_case1_target_conversation.py (Maria & Tomás base case, Rule R5 minor protection blocks rebooking)
+# - test_case2_contradictory_sources.py (Reconciles OPS_CORE vs degraded LEGACY_MIRROR)
+# - test_case3_prompt_injection_remarks.py (Injection in remarks cannot bypass HITL or grant cash)
+# - test_case4_upstream_timeout_503.py (Upstream 503 timeout marked as INDETERMINATE)
+# - test_faithfulness.py (Every granted entitlement strictly anchored to POL-DELAY-2026-03)
+# - test_telemetry.py (Validates JSONL trace recording and PII masking)
 
-# Or locally (if Python virtual environment is active)
+# 2. Run Dev 1 Agent Core & Security Tests:
+docker compose exec backend pytest backend/tests/test_agent_security.py backend/tests/test_agent_engine.py -v
+
+# 3. Run Dev 3 Agent API HTTP Endpoint Tests:
+docker compose exec backend pytest backend/tests/test_agent_api.py -v
+
+# Or locally (if Python virtual environment is active):
 pytest backend/tests -v
 ```
 
@@ -344,13 +376,19 @@ npm run build
 
 ## 9. Engineering Standards & Documentation Artifacts
 
-* **Engineering Architecture Report:** [`docs/ENGINEERING_README.md`](docs/ENGINEERING_README.md) &bull; Details assumptions, step classification (deterministic vs human), risk matrix, and trade-off rationales.
-* **AI Usage & Decision Log:** [`docs/AI_USAGE_NOTE.md`](docs/AI_USAGE_NOTE.md) &bull; Documents the deliberate engineering choice to maintain a 100% deterministic runtime core without LLM hallucination risk.
-* **Team Execution Plan:** [`docs/team-plan.md`](docs/team-plan.md) &bull; Role distribution (Dev 1, Dev 2, Dev 3) and synchronisation workflow.
-* **OpenSpec Canonical Specifications:**
-  * [`openspec/specs/disruption-contract/spec.md`](openspec/specs/disruption-contract/spec.md): Data contracts and shared schemas.
-  * [`openspec/specs/disruption-api/spec.md`](openspec/specs/disruption-api/spec.md): Endpoints, idempotency, and audit requirements.
-  * [`openspec/specs/disruption-ui/spec.md`](openspec/specs/disruption-ui/spec.md): User interface, routing, and distillation rules.
+* **Engineering Architecture Report (Part 1 & 2):** [`docs/ENGINEERING_README.md`](docs/ENGINEERING_README.md) &bull; Answers all 4 critical exam architecture questions: Autonomy boundary classification, Agent pattern justification (latency and costs), Context and PII boundaries, and Tools vs RAG rationale with Mermaid diagram.
+* **AI Usage & Decision Log (Part 1 & 2):** [`docs/AI_USAGE_NOTE.md`](docs/AI_USAGE_NOTE.md) &bull; Documents AI tools used, outputs accepted/rejected/modified, personal human engineering decisions, and information strictly prohibited from LLM models.
+* **Team Execution Plan:** [`docs/team-plan.md`](docs/team-plan.md) &bull; Role distribution (Dev 1, Dev 2, Dev 3) and synchronization workflow.
+* **Agent Architecture Specification Document:** [`openspec/documento_de_arquitectura_de_agente.md`](openspec/documento_de_arquitectura_de_agente.md) &bull; Original team allocation and architecture specification.
+* **OpenSpec Canonical Specifications (System Truth):**
+  * **Part 1 (Deterministic Core):**
+    * [`openspec/specs/disruption-contract/spec.md`](openspec/specs/disruption-contract/spec.md): Data contracts and shared schemas.
+    * [`openspec/specs/disruption-api/spec.md`](openspec/specs/disruption-api/spec.md): Endpoints, idempotency, and audit requirements.
+    * [`openspec/specs/disruption-ui/spec.md`](openspec/specs/disruption-ui/spec.md): User interface, routing, and distillation rules.
+  * **Part 2 (Autonomous Agent Architecture):**
+    * [`openspec/specs/agent-core/spec.md`](openspec/specs/agent-core/spec.md): Dev 1 Agent Core, Tool Bindings & Prompt Injection Defense.
+    * [`openspec/specs/agent-evals/spec.md`](openspec/specs/agent-evals/spec.md): Dev 2 Safety Guardrails (HITL), Telemetry & Trajectory Evals.
+    * [`openspec/specs/agent-api/spec.md`](openspec/specs/agent-api/spec.md): Dev 3 Agent API Endpoint & Interactive Chat Interface.
 
 ---
 
