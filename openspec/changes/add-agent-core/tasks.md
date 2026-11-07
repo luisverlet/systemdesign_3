@@ -6,13 +6,13 @@
 - [x] 2.2 Implement `PromptInjectionDefense` sanitizer isolating tool returns as inert XML data
 
 ## 3. Tool Bindings & Schema Definition
-- [ ] 3.1 Define Pydantic schemas in `backend/app/schemas/agent.py` for structured agent output
-- [ ] 3.2 Implement typed tool bindings in `backend/app/services/agent/tools.py` using Part 1 deterministic services
+- [x] 3.1 Define Pydantic schemas in `backend/app/schemas/agent.py` for structured agent output
+- [x] 3.2 Implement typed tool bindings in `backend/app/services/agent/tools.py` using Part 1 deterministic services
 
 ## 4. System Prompt & Agent Engine
-- [ ] 4.1 Author system prompt and instruction guardrails in `backend/app/services/agent/prompts.py`
-- [ ] 4.2 Implement agent function calling loop and structured response generator in `backend/app/services/agent/engine.py`
+- [x] 4.1 Author system prompt and instruction guardrails in `backend/app/services/agent/prompts.py`
+- [x] 4.2 Implement agent function calling loop and structured response generator in `backend/app/services/agent/engine.py`
 
 ## 5. Verification & Tests
-- [ ] 5.1 Unit tests for prompt injection neutralization
-- [ ] 5.2 End-to-end test of the agent solving target conversation for Maria and Tomás (ABC123)
+- [x] 5.1 Unit tests for prompt injection neutralization
+- [x] 5.2 End-to-end test of the agent solving target conversation for Maria and Tomás (ABC123)
