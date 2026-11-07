@@ -42,3 +42,4 @@ flowchart TD
 - The client-side and server-side endpoints never expose unmasked PII (phone numbers, emails, documents).
 - The passenger response is strictly grounded in `policy_refs` returned by deterministic policy evaluation.
 - The UI clearly signals when human review is required, disabling autonomous unilateral rebooking.
+

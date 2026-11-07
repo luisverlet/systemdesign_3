@@ -30,3 +30,4 @@ export interface AgentResponse {
   tools_invoked: string[]
   metadata: Record<string, unknown>
 }
+

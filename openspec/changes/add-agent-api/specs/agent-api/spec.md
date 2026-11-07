@@ -21,3 +21,4 @@ The frontend application SHALL provide an interactive conversation page at route
 #### Scenario: Displaying agent response and trajectory details
 - **WHEN** the agent chat request completes successfully
 - **THEN** the conversational reply is displayed to the user along with a visual breakdown of the tools invoked, policy entitlements, and the human intervention status
+

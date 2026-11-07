@@ -30,3 +30,4 @@ With the autonomous agent core implemented (Dev 1), the system requires an inter
 - **Backend files:** `backend/app/api/agent.py`, `backend/app/api/routes.py`, `backend/tests/test_agent_api.py`
 - **Frontend files:** `frontend/src/pages/AgentChat/`, `frontend/src/App.tsx`, `frontend/src/components/Header/Header.tsx`, `frontend/src/services/disruptionApi.ts`
 - **Docs:** `docs/ENGINEERING_README.md`, `docs/AI_USAGE_NOTE.md`, `README.md`
+

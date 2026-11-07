@@ -51,3 +51,4 @@ def test_agent_chat_empty_message_422():
     }
     response = client.post(ENDPOINT, json=payload)
     assert response.status_code == 422
+
