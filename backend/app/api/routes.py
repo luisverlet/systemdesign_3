@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.disruptions import router as disruptions_router
+from app.api.agent import router as agent_router
 
 api_router = APIRouter()
 
@@ -11,3 +12,4 @@ def health() -> dict[str, str]:
 
 
 api_router.include_router(disruptions_router)
+api_router.include_router(agent_router)

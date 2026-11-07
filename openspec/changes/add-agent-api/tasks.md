@@ -2,9 +2,9 @@
 - [x] 1.1 Document proposal.md, design.md, tasks.md, and specs/agent-api/spec.md
 
 ## 2. Agent API Endpoint
-- [ ] 2.1 Implement `POST /api/v1/agent/chat` in `backend/app/api/agent.py` using `AgentQueryRequest` and `DisruptionAgent`
-- [ ] 2.2 Register the agent router in `backend/app/api/routes.py`
-- [ ] 2.3 Implement automated tests in `backend/tests/test_agent_api.py` validating the endpoint with target conversation `ABC123`
+- [x] 2.1 Implement `POST /api/v1/agent/chat` in `backend/app/api/agent.py` using `AgentQueryRequest` and `DisruptionAgent`
+- [x] 2.2 Register the agent router in `backend/app/api/routes.py`
+- [x] 2.3 Implement automated tests in `backend/tests/test_agent_api.py` validating the endpoint with target conversation `ABC123`
 
 ## 3. Interactive Agent Chat Interface (Frontend)
 - [ ] 3.1 Add agent client method `askAgent` in `frontend/src/services/disruptionApi.ts` supporting both live API and mock fallback
