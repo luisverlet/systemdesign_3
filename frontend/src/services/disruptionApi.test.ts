@@ -79,14 +79,14 @@ describe('disruptionApi', () => {
         decision: { type: 'NO_ACTION' },
       }
 
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => mockResponse,
       } as unknown as Response)
 
       const result = await fetchDisruption('DEF456', 'live')
       expect(result.booking_id).toBe('DEF456')
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(globalThis.fetch).toHaveBeenCalledWith(
         expect.stringContaining('/disruptions/resolve'),
         expect.objectContaining({
           method: 'POST',
@@ -96,7 +96,7 @@ describe('disruptionApi', () => {
     })
 
     it('handles 422 validation error', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 422,
         json: async () => ({ detail: 'Invalid PNR format' }),
@@ -111,7 +111,7 @@ describe('disruptionApi', () => {
     })
 
     it('handles 503 service unavailable error', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 503,
         json: async () => ({ detail: 'Service overloaded' }),
@@ -126,7 +126,7 @@ describe('disruptionApi', () => {
     })
 
     it('handles network failure (fetch throws)', async () => {
-      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
+      globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
 
       await expect(fetchDisruption('ABC123', 'live')).rejects.toThrow(ApiError)
       try {
@@ -137,7 +137,7 @@ describe('disruptionApi', () => {
     })
 
     it('throws DistillationError when live API returns malformed flight data', async () => {
-      global.fetch = vi.fn().mockResolvedValue({
+      globalThis.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ booking_id: 'ABC123', flights: [] }),
       } as unknown as Response)

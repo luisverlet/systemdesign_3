@@ -18,10 +18,10 @@
 - [x] 5.2 Indicadores claros de impacto: retraso acumulado, conexión perdida y cálculo de tiempos (embarque y sala)
 
 ## 6. Opciones, Toma de Decisión y Caso Humano
-- [ ] 6.1 Componente `DecisionBanner` para casos de revisión humana (`HUMAN_REVIEW`, caso `HC-4471`) y auto-ofertas
-- [ ] 6.2 Componente `OptionCard` para rebookings y compensaciones elegibles
-- [ ] 6.3 Resumen de pasajeros y cumplimiento de confidencialidad PII (D6)
+- [x] 6.1 Componente `DecisionBanner` para casos de revisión humana (`HUMAN_REVIEW`, caso `HC-4471`) y auto-ofertas
+- [x] 6.2 Componente `OptionCard` para rebookings y compensaciones elegibles
+- [x] 6.3 Resumen de pasajeros y cumplimiento de confidencialidad PII (D6)
 
 ## 7. Resiliencia, Estados de Carga y Pruebas E2E / Vitest
-- [ ] 7.1 Estados de carga (`SkeletonLoader`), errores interactivos y reconexión
-- [ ] 7.2 Tests de integración con Vitest para el flujo completo del caso base `ABC123`
+- [x] 7.1 Estados de carga (`SkeletonLoader`), errores interactivos y reconexión
+- [x] 7.2 Tests de integración con Vitest para el flujo completo del caso base `ABC123`
