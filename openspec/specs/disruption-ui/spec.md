@@ -48,3 +48,4 @@ The interface SHALL render only non-sensitive passenger identifiers (full name, 
 #### Scenario: Inspecting passenger details
 - **WHEN** viewing booking `ABC123` with passengers Maria Silva and Tomás Silva
 - **THEN** only names and passenger categories (Adult / Child) are visible on the card
+

@@ -33,3 +33,4 @@ La respuesta SHALL listar todos los eventos operacionales recibidos indicando si
 #### Scenario: Fuente degradada
 - **WHEN** un evento proviene de una fuente en `sources_degraded`
 - **THEN** aparece con `accepted = false` y `discard_reason = SOURCE_DEGRADED`
+

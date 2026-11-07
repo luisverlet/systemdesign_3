@@ -33,3 +33,4 @@ El sistema MUST NOT enviar notificaciones al pasajero sin `policy_ref`.
 #### Scenario: Mensaje sin referencia de política
 - **WHEN** se intenta notificar sin `policy_ref`
 - **THEN** no se envía, se audita el rechazo y se deriva a caso humano
+
