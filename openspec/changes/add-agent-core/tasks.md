@@ -2,8 +2,8 @@
 - [x] 1.1 Document proposal.md, design.md and specs/agent-core/spec.md
 
 ## 2. Prompt Injection Defense & Fixture Update
-- [ ] 2.1 Update `trip_context_ABC123.json` fixture with malicious `remarks` injection
-- [ ] 2.2 Implement `PromptInjectionDefense` sanitizer isolating tool returns as inert XML data
+- [x] 2.1 Update `trip_context_ABC123.json` fixture with malicious `remarks` injection
+- [x] 2.2 Implement `PromptInjectionDefense` sanitizer isolating tool returns as inert XML data
 
 ## 3. Tool Bindings & Schema Definition
 - [ ] 3.1 Define Pydantic schemas in `backend/app/schemas/agent.py` for structured agent output
