@@ -146,7 +146,9 @@ docker compose ps
 | **Interactive API Documentation (Swagger)** | [http://localhost:8000/docs](http://localhost:8000/docs) | Interactive OpenAPI 3.1 schema, endpoint testing & schemas |
 | **ReDoc Alternative Documentation** | [http://localhost:8000/redoc](http://localhost:8000/redoc) | Clean API specification reference |
 | **Health Check Endpoint** | [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health) | System uptime & service health probe |
-| **Passenger Web Portal** | [http://localhost:5173](http://localhost:5173) | Responsive self-service portal with PNR search & itinerary views |
+| **Passenger Web Portal (PNR Search)** | [http://localhost:5173](http://localhost:5173) | Responsive self-service portal with PNR search & itinerary views |
+| **AI Agent Chat Interface** | [http://localhost:5173/agent](http://localhost:5173/agent) | Interactive conversational chat with the autonomous AI agent & trajectory inspector |
+| **Agent Chat Endpoint** | [http://localhost:8000/api/v1/agent/chat](http://localhost:8000/api/v1/agent/chat) | Autonomous agent endpoint with Function Calling over disruption tools |
 | **PostgreSQL Database** | `localhost:5432` (db: `app`, user: `app`) | Audit trails and idempotency state store |
 
 ---
@@ -261,20 +263,73 @@ curl -X POST http://localhost:8000/api/v1/disruptions/escalate \
 
 ---
 
+### `POST /api/v1/agent/chat`
+Autonomous AI Agent endpoint powered by Function Calling. Ingests passenger queries in natural language, reasons over operational events, applies policy rules R1–R5, activates human-in-the-loop controls for traveling minors, and returns a verified structured response.
+
+**Sample Request (Maria Silva & Tomás Base Case)**:
+```bash
+curl -X POST http://localhost:8000/api/v1/agent/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "booking_id": "ABC123",
+    "message": "Hola, soy Maria. Mi vuelo a Lima está retrasado y viajo con mi hijo de 7 años. ¿Alcanzamos la conexión a México? Si no, cámbiennos al vuelo de esta noche. También quiero saber cuánto me van a pagar de compensación."
+  }'
+```
+
+**Key Response Fields**:
+```json
+{
+  "booking_id": "ABC123",
+  "what_happened": "El vuelo NB500 (SCL -> LIM) presenta un retraso de 160 minutos con llegada estimada a las 20:35. La conexión NB2410 (LIM -> MEX) sale a las 19:05, provocando la pérdida física de la conexión (MCT 15 min no cumplido).",
+  "entitlements": ["REBOOK_NO_FEE"],
+  "options": [
+    {
+      "option_id": "O1",
+      "type": "REBOOK",
+      "flight_number": "NB2412",
+      "origin": "LIM",
+      "destination": "MEX",
+      "date": "2026-09-16",
+      "departure": "08:15",
+      "fare_difference": 0.0,
+      "seats_available": 4,
+      "policy_ref": "POL-DELAY-2026-03",
+      "confidence": "HIGH"
+    }
+  ],
+  "next_step": "Caso derivado a agente de operaciones en aeropuerto (Caso HC-4471, SLA 45 min). Por favor acérquese al mostrador de atención prioritaria.",
+  "policy_refs": ["POL-DELAY-2026-03"],
+  "human_required": true,
+  "passenger_reply": "Hola María, entendemos tu preocupación al viajar con Tomás (7 años)...",
+  "tools_invoked": [
+    "get_trip_context",
+    "get_operational_events",
+    "get_policy_rules",
+    "get_eligible_options",
+    "create_human_case"
+  ]
+}
+```
+
+---
+
 ## 8. Running Automated Test Suites
 
-### Backend Tests (pytest)
-Runs contract validation, event reconciliation, policy rules R1–R5, and base case scenarios:
+### Backend Tests & Agent Evals (pytest)
+Runs contract validation, event reconciliation, policy rules R1–R5, agent engine, prompt injection security, and the agent API suite:
 ```bash
 # Inside Docker container
 docker compose exec backend pytest -v
 
-# Or locally (if Python environment is configured)
+# Run agent and security evaluation tests specifically
+docker compose exec backend pytest backend/tests/test_agent_*.py -v
+
+# Or locally (if Python virtual environment is active)
 pytest backend/tests -v
 ```
 
 ### Frontend Tests (Vitest)
-Executes 29 component and integration tests covering navigation, distillation error handling, and PII masking:
+Executes component and integration tests covering navigation, distillation error handling, PII masking, and the interactive Agent Chat interface:
 ```bash
 # Inside Docker container
 docker compose exec frontend npm test

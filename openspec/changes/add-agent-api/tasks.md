@@ -21,5 +21,5 @@
   - Mermaid architecture diagram
 
 ## 5. AI Usage Note & Final README
-- [ ] 5.1 Update `docs/AI_USAGE_NOTE.md` covering LLM tools used, accepted/rejected suggestions, human decisions, and data forbidden from AI prompts
-- [ ] 5.2 Update `README.md` with instructions for running the Agent Chat UI, testing the API, and Docker instructions
+- [x] 5.1 Update `docs/AI_USAGE_NOTE.md` covering LLM tools used, accepted/rejected suggestions, human decisions, and data forbidden from AI prompts
+- [x] 5.2 Update `README.md` with instructions for running the Agent Chat UI, testing the API, and Docker instructions
