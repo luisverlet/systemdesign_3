@@ -1,0 +1,99 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.segmentsCount {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.segmentList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.connectionAlert {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-md);
+  color: var(--color-danger);
+}
+
+.alertIcon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.alertContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.alertTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.alertDescription {
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.alertReasons {
+  margin: 0.35rem 0 0 1.25rem;
+  padding: 0;
+  font-size: 0.825rem;
+}
+
+.connectionSafe {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.connectionDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.dividerLine {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: dashed 2px var(--color-border);
+}

@@ -14,8 +14,8 @@
 - [x] 4.2 Accesos directos a casos de prueba preconfigurados (ej. reserva `ABC123`)
 
 ## 5. Visualización del Estado e Impacto del Viaje
-- [ ] 5.1 Componentes de vuelos `FlightCard`, `TripTimeline` y etiquetas de estado `EventBadge`
-- [ ] 5.2 Indicadores claros de impacto: retraso acumulado, conexión perdida y cálculo de tiempos (embarque y sala)
+- [x] 5.1 Componentes de vuelos `FlightCard`, `TripTimeline` y etiquetas de estado `EventBadge`
+- [x] 5.2 Indicadores claros de impacto: retraso acumulado, conexión perdida y cálculo de tiempos (embarque y sala)
 
 ## 6. Opciones, Toma de Decisión y Caso Humano
 - [ ] 6.1 Componente `DecisionBanner` para casos de revisión humana (`HUMAN_REVIEW`, caso `HC-4471`) y auto-ofertas
