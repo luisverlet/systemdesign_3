@@ -1,10 +1,11 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useDataSource } from '../../context/DataSourceContext'
 import styles from './Header.module.css'
 
 export const Header: React.FC = () => {
   const { mode, setMode } = useDataSource()
+  const location = useLocation()
 
   return (
     <header className={styles.header}>
@@ -15,6 +16,21 @@ export const Header: React.FC = () => {
           <span className={styles.subtitle}>Disruption &amp; Rebooking Assistant</span>
         </div>
       </Link>
+
+      <nav className={styles.navGroup} aria-label="Main Navigation">
+        <Link
+          to="/"
+          className={`${styles.navLink} ${location.pathname === '/' ? styles.navLinkActive : ''}`}
+        >
+          PNR Search
+        </Link>
+        <Link
+          to="/agent"
+          className={`${styles.navLink} ${location.pathname === '/agent' ? styles.navLinkActive : ''}`}
+        >
+          AI Agent Chat
+        </Link>
+      </nav>
 
       <div className={styles.controls}>
         <div className={styles.modeSelector} role="radiogroup" aria-label="Data Source Mode">

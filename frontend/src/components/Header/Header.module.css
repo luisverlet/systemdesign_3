@@ -44,6 +44,35 @@
   font-weight: 500;
 }
 
+.navGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 2rem;
+  margin-right: auto;
+}
+
+.navLink {
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.navLink:hover {
+  color: var(--color-accent);
+  background-color: var(--color-surface-subtle);
+}
+
+.navLinkActive {
+  color: var(--color-accent);
+  background-color: #eff6ff;
+  font-weight: 700;
+}
+
 .controls {
   display: flex;
   align-items: center;
