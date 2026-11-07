@@ -42,17 +42,25 @@ class DisruptionAgent:
         start_time = time.time()
         trace_id = str(uuid.uuid4())
 
-        if self.api_key:
+        effective_api_key = (query.api_key or "").strip() or self.api_key
+
+        if effective_api_key:
             try:
-                response = self._run_gemini_live(query)
+                response = self._run_gemini_live(query, api_key=effective_api_key)
+                response.execution_mode = "GEMINI_LIVE_LLM"
+                response.model_used = self.model_name
             except Exception as err:
                 # Fallback to deterministic trajectory if API key is invalid or quota is exhausted
                 response = self._run_deterministic_trajectory(
                     query,
                     fallback_reason=f"Live LLM call failed ({str(err)}); executed deterministic trajectory engine.",
                 )
+                response.execution_mode = "SIMULATED_DETERMINISTIC"
+                response.model_used = "None (Fallback Deterministic Simulation)"
         else:
             response = self._run_deterministic_trajectory(query)
+            response.execution_mode = "SIMULATED_DETERMINISTIC"
+            response.model_used = "None (Built-in Deterministic Simulation)"
 
         latency_ms = (time.time() - start_time) * 1000
         response.metadata["trace_id"] = trace_id
@@ -226,7 +234,7 @@ class DisruptionAgent:
             metadata=metadata,
         )
 
-    def _run_gemini_live(self, query: AgentQueryRequest) -> AgentResponse:
+    def _run_gemini_live(self, query: AgentQueryRequest, api_key: str | None = None) -> AgentResponse:
         """
         Executes real function calling with the Google Gemini API.
         """
@@ -234,7 +242,7 @@ class DisruptionAgent:
             from google import genai
             from google.genai import types
 
-            client = genai.Client(api_key=self.api_key)
+            client = genai.Client(api_key=(api_key or self.api_key))
 
             # Build tools list for google-genai
             tools = [

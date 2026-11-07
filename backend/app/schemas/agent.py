@@ -17,6 +17,10 @@ class AgentQueryRequest(BaseModel):
             "Hola, soy Maria. Mi vuelo a Lima está retrasado y viajo con mi hijo de 7 años. ¿Alcanzamos la conexión a México? Si no, cámbiennos al vuelo de esta noche. También quiero saber cuánto me van a pagar de compensación."
         ],
     )
+    api_key: str | None = Field(
+        default=None,
+        description="Optional Gemini API key supplied directly from the client interface.",
+    )
 
 
 class AgentOption(BaseModel):
@@ -67,6 +71,14 @@ class AgentResponse(BaseModel):
     tools_invoked: list[str] = Field(
         default_factory=list,
         description="Ordered sequence of tools called during trajectory execution",
+    )
+    execution_mode: str = Field(
+        default="SIMULATED_DETERMINISTIC",
+        description="Execution mode: 'GEMINI_LIVE_LLM' or 'SIMULATED_DETERMINISTIC'",
+    )
+    model_used: str | None = Field(
+        default=None,
+        description="LLM model name if live inference was executed",
     )
     metadata: dict[str, Any] = Field(
         default_factory=dict,

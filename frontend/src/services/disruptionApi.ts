@@ -290,6 +290,7 @@ export async function askAgent(
       body: JSON.stringify({
         booking_id: normalizedId,
         message: request.message,
+        api_key: request.api_key ? request.api_key.trim() : undefined,
       }),
     })
   } catch {

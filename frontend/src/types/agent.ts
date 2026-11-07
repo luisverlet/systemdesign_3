@@ -16,6 +16,7 @@ export interface AgentOption {
 export interface AgentQueryRequest {
   booking_id: string
   message: string
+  api_key?: string
 }
 
 export interface AgentResponse {
@@ -28,6 +29,7 @@ export interface AgentResponse {
   human_required: boolean
   passenger_reply: string
   tools_invoked: string[]
+  execution_mode?: string
+  model_used?: string | null
   metadata: Record<string, unknown>
 }
-

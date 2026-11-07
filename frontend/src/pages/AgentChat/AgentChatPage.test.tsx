@@ -16,10 +16,8 @@ describe('AgentChatPage', () => {
     )
 
     expect(screen.getByText('AI Disruption Companion Agent')).toBeInTheDocument()
-    expect(screen.getByLabelText(/código de reserva/i)).toHaveValue('ABC123')
-    expect(screen.getByLabelText(/consulta del pasajero/i)).toHaveValue(
-      expect.stringContaining('Hola, soy Maria')
-    )
+    expect(screen.getByLabelText(/ódigo de reserva/i)).toHaveValue('ABC123')
+    expect((screen.getByLabelText(/onsulta del pasajero/i) as HTMLTextAreaElement).value).toContain('Hola, soy Maria')
     expect(screen.getByTestId('submit-agent-query-btn')).toBeInTheDocument()
   })
 
@@ -35,16 +33,14 @@ describe('AgentChatPage', () => {
     const clearBtn = screen.getByText('Limpiar')
     fireEvent.click(clearBtn)
 
-    expect(screen.getByLabelText(/código de reserva/i)).toHaveValue('')
-    expect(screen.getByLabelText(/consulta del pasajero/i)).toHaveValue('')
+    expect(screen.getByLabelText(/ódigo de reserva/i)).toHaveValue('')
+    expect(screen.getByLabelText(/onsulta del pasajero/i)).toHaveValue('')
 
     const presetBtn = screen.getByTestId('preset-maria-btn')
     fireEvent.click(presetBtn)
 
-    expect(screen.getByLabelText(/código de reserva/i)).toHaveValue('ABC123')
-    expect(screen.getByLabelText(/consulta del pasajero/i)).toHaveValue(
-      expect.stringContaining('Hola, soy Maria')
-    )
+    expect(screen.getByLabelText(/ódigo de reserva/i)).toHaveValue('ABC123')
+    expect((screen.getByLabelText(/onsulta del pasajero/i) as HTMLTextAreaElement).value).toContain('Hola, soy Maria')
   })
 
   it('submits query and renders conversational reply and HITL banner', async () => {
