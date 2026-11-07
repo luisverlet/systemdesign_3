@@ -19,8 +19,7 @@
 ## 5. Integración
 - [ ] 5.1 Reemplazar stub por motor de Dev 1
 
-## 6. Tests
-- [ ] 6.1 resolve ABC123 → HUMAN_REVIEW + fila de auditoría
-- [ ] 6.2 rebooking: replay misma key, 409, 503 → INDETERMINATE
-- [ ] 6.3 rebooking bloqueado si HUMAN_REVIEW
-- [ ] 6.4 notify sin policy_ref → no se envía
+## 6. Documentación del Examen
+- [x] 6.1 Engineering README (docs/ENGINEERING_README.md con tabla de clasificación)
+- [x] 6.2 AI Usage & Decision Note (docs/AI_USAGE_NOTE.md)
+- [x] 6.3 Technical evidence e instrucciones de ejecución (README.md)
