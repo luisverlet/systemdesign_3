@@ -29,3 +29,4 @@ La suite de pruebas SHALL verificar que el agente ejecute la secuencia esperada 
 #### Scenario: Evaluación de caso base
 - **WHEN** se ejecuta la suite de evaluación para el caso Maria y Tomás
 - **THEN** la trayectoria verifica que no se llamó a `create_rebooking_request` y que `policy_ref` coincide con `POL-DELAY-2026-03`
+
