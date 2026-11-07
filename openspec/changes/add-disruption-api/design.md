@@ -29,9 +29,9 @@ Backend por capas (D2): `api` (routers FastAPI) → `services` (orquestación) �
 | created_at / updated_at | TIMESTAMPTZ | |
 
 ### Flujo de rebooking idempotente
-1. Sin `Idempotency-Key` → 400.
+1. Llave derivada en backend: `idempotency_key = f"{booking_id}:{option_id}"` (o SHA-256 de ambos si excede longitud).
 2. Key existente con `SUCCEEDED` → devolver respuesta guardada (replay, sin llamar upstream).
-3. Key existente `IN_PROGRESS` → 409.
+3. Key existente `IN_PROGRESS` → 409 `CONCURRENT_REQUEST`.
 4. Nueva → insertar `IN_PROGRESS`, llamar `create_rebooking_request`:
    - 201 → `SUCCEEDED`.
    - 409 `DUPLICATE_REQUEST` → `SUCCEEDED` con el `request_id` devuelto.
